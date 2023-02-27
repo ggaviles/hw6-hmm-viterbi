@@ -14,10 +14,10 @@ def test_user_case_one():
     """_summary_
     """
     # index annotation observation_states=[i,j]    
-    observation_states = ['motivated','burned-out'] # A graduate student's mental health observed after a rotation
+    observation_states = ['motivated','burned-out']  # A graduate student's mental health observed after a rotation
 
     # index annotation hidden_states=[i,j]
-    hidden_states = ['R01','R21'] # The NIH funding source of the graduate student's rotation project 
+    hidden_states = ['R01','R21']  # The NIH funding source of the graduate student's rotation project
 
     # PONDERING QUESTION: How would a user define/compute their own HMM instantiation inputs to decode the hidden states for their use case observations?
     use_case_one_data = np.load('./data/UserCase-One.npz')
@@ -26,9 +26,9 @@ def test_user_case_one():
     # observation and hidden states and prior, transition, and emission probabilities.
     use_case_one_hmm = HiddenMarkovModel(observation_states,
                                          hidden_states,
-                      use_case_one_data['prior_probabilities'], # prior probabilities of hidden states in the order specified in the hidden_states list
-                      use_case_one_data['transition_probabilities'], # transition_probabilities[:,hidden_states[i]]
-                      use_case_one_data['emission_probabilities']) # emission_probabilities[hidden_states[i],:][:,observation_states[j]]
+                      use_case_one_data['prior_probabilities'],  # prior probabilities of hidden states in the order specified in the hidden_states list
+                      use_case_one_data['transition_probabilities'],  # transition_probabilities[:,hidden_states[i]]
+                      use_case_one_data['emission_probabilities'])  # emission_probabilities[hidden_states[i],:][:,observation_states[j]]
     
     # Instantiate submodule class models.ViterbiAlgorithm using the use case one HMM 
     use_case_one_viterbi = ViterbiAlgorithm(use_case_one_hmm)
