@@ -1,9 +1,9 @@
 """
 UCSF BMI203: Biocomputing Algorithms
-Author:
-Date:
-Package: 
-Description: 
+Author: Giovanni Aviles
+Date: 3/1/23
+Program: hw6-hmm-viterbi
+Description: Implementing the Viterbi Algorithm
 """
 import numpy as np
 from .hmm import *
