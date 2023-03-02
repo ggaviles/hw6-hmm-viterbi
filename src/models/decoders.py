@@ -52,12 +52,11 @@ class ViterbiAlgorithm:
 
             # TODO: comment the initialization, recursion, and termination steps
 
-            # product_of_delta_and_transition_emission = np.multiply(delta*self.hmm_object.transition_probabilities)
-
             # Update delta and scale
             delta = np.max(product_of_delta_and_transition_emission, axis=1)
-            if np.sum(delta) == 0:
-                delta = np.full_like(delta, np.finfo(float).eps)
+            delta = delta / np.sum(delta)  # Scale
+            """if np.sum(delta) == 0:
+                delta = np.full_like(delta, np.finfo(float).eps)"""
 
             # Select the hidden state sequence with the maximum probability
             best_path[trellis_node, :] = np.argmax(product_of_delta_and_transition_emission, axis=1)

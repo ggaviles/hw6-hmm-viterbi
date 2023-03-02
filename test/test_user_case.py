@@ -11,7 +11,7 @@ from src.models.hmm import HiddenMarkovModel
 from src.models.decoders import ViterbiAlgorithm
 
 def test_user_case_one():
-    """_summary_
+    """Test if Viterbi algorithm implementation returns best hidden state sequence
     """
     # index annotation observation_states=[i,j]    
     observation_states = ['motivated','burned-out']  # A graduate student's mental health observed after a rotation
@@ -50,7 +50,7 @@ def test_user_case_one():
 
 
 def test_user_case_two():
-    """_summary_
+    """Test if Viterbi algorithm implementation returns a best hidden state sequence with an accuracy of at least 50%
     """
     # index annotation observation_states=[i,j]
     observation_states = ['motivated', 'burned-out']  # A graduate student's mental health observed after a rotation
@@ -79,9 +79,47 @@ def test_user_case_two():
     # Evaluate the accuracy of using the progenitor cardiomyocyte HMM and Viterbi algorithm to decode the progenitor CM's CRE selection strategies
     # NOTE: Model is expected to perform with 50% accuracy
     assert np.sum(use_case_one_data['hidden_states'] == evaluate_viterbi_decoder_using_observation_states_of_use_case_one) / len(
-        use_case_one_data['observation_states']) == 0.6
+        use_case_one_data['observation_states']) == 0.5
 
 def test_user_case_three():
-    """_summary_
+    """Toy example: Test if Viterbi Algorithm implementation returns a best hidden state sequence with an accuracy of at least 60%
     """
-    # TODO
+    np.savez('../data/Health.npz',
+             prior_probabilities=np.array([0.6, 0.4]),
+             transition_probabilities=np.array([[0.7, 0.3],
+                                                [0.4, 0.6]]),
+             emission_probabilities=np.array([[0.5, 0.4, 0.1],
+                                              [0.1, 0.3, 0.6]]),
+             observation_states=np.array(
+                 ['normal', 'cold', 'dizzy']),
+             hidden_states=np.array(['Healthy', 'Ill', 'Ill']))
+
+    health_data = np.load('../data/Health.npz')
+
+    # index annotation observation_states=[i,j]
+    observation_states = ['normal', 'cold', 'dizzy']
+
+    # index annotation hidden_states=[i,j]
+    hidden_states = ['Healthy', 'Ill']
+
+    # Instantiate submodule class models.HiddenMarkovModel with
+    # observation and hidden states and prior, transition, and emission probabilities.
+    health_hmm = HiddenMarkovModel(observation_states,
+                                   hidden_states,
+                                   health_data['prior_probabilities'],# prior probabilities of hidden states in the order specified in the hidden_states list
+                                   health_data['transition_probabilities'], # transition_probabilities[:,hidden_states[i]]
+                                   health_data['emission_probabilities'])  # emission_probabilities[hidden_states[i],:][:,observation_states[j]]
+
+    # Instantiate submodule class models.ViterbiAlgorithm using the use case one HMM
+    health_viterbi = ViterbiAlgorithm(health_hmm)
+
+    # Decode the hidden states and evaluate the model performance
+    evaluate_viterbi_decoder_using_observation_states = health_viterbi.best_hidden_state_sequence(
+        health_data['observation_states'])
+
+    # Evaluate the accuracy of using the progenitor cardiomyocyte HMM and Viterbi algorithm to decode the progenitor CM's CRE selection strategies
+    # NOTE: Model is expected to perform with over 60% accuracy
+    assert np.sum(
+        health_data['hidden_states'] == evaluate_viterbi_decoder_using_observation_states) / len(
+        health_data['observation_states']) >= 0.6
+
