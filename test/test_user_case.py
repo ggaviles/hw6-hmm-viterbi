@@ -89,7 +89,9 @@ def test_user_case_two():
 def test_user_case_three():
     """Toy example: Test if Viterbi Algorithm implementation returns the best hidden state sequence
     """
-    np.savez('../data/Health.npz',
+    data_dir = pathlib.Path(__file__).resolve().parent.parent / 'data'
+    health_data_file = data_dir / "Health.npz"
+    np.savez(health_data_file,
              prior_probabilities=np.array([0.6, 0.4]),
              transition_probabilities=np.array([[0.7, 0.3],
                                                 [0.4, 0.6]]),
@@ -99,8 +101,6 @@ def test_user_case_three():
                  ['normal', 'cold', 'dizzy']),
              hidden_states=np.array(['Healthy', 'Healthy', 'Ill']))
 
-    data_dir = pathlib.Path(__file__).resolve().parent.parent / 'data'
-    health_data_file = data_dir / "Health.npz"
     health_data = np.load(health_data_file)
 
     # index annotation observation_states=[i,j]
