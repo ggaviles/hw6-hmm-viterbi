@@ -101,7 +101,7 @@ We recommend completing these deliverables in the listed order:
 - [X] Complete the docstrings in submodules models.hmm and models.decoders by following the pep257 format including pep484 type hints. 
     - Please note, Visual Studio Code supports an extension called [autoDocstring](https://github.com/NilsJPWerner/autoDocstring/blob/HEAD/docs/pep257.md), which will help by creating an automated template for each class method and function.
 
-- [ ] Develop **two** user case unit tests that follow a testable hypothesis that you design for the Viterbi algorithm. State your hypothesis in the documentation.
+- [X] Develop **two** user case unit tests that follow a testable hypothesis that you design for the Viterbi algorithm. State your hypothesis in the documentation.
     - For example, in the lecture, we reviewed an example where the observations were the mental health of a rotating graduate student, and the hidden states were the rotation project's NIH funding.
 
 **Decision Questions, Reminders, & Important Notes**
