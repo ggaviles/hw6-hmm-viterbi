@@ -1,11 +1,12 @@
 """
 UCSF BMI203: Biocomputing Algorithms
-Author:
-Date: 
-Program: 
-Description:
+Author: Giovanni Aviles
+Date: 03/01/23
+Program: Biophysics
+Description: Testing Viterbi Algorithm Implementation on revealing hidden cardiomyocyte regulatory states
 """
 import pytest
+import pathlib
 import numpy as np
 from src.models.hmm import HiddenMarkovModel
 from src.models.decoders import ViterbiAlgorithm
@@ -20,7 +21,9 @@ def test_deliverable():
     hidden_states = ['encode-atac', 'atac'] # In order of the two cCRE selection strategies (encode_atac, atac)
 
     # Import the HMM input data for progenitor cardiomyocytes (prefix: prog_cm)
-    prog_cm_data = np.load('../data/ProjectDeliverable-ProgenitorCMs.npz')
+    data_dir = pathlib.Path(__file__).resolve().parent.parent / 'data'
+    prog_cm_data_file = data_dir / "ProjectDeliverable-ProgenitorCMs.npz"
+    prog_cm_data = np.load(prog_cm_data_file)
 
     # Instantiate submodule class models.HiddenMarkovModel with progenitor cardiomyocytes
     # observation and hidden states and prior, transition, and emission probabilities.
@@ -42,7 +45,8 @@ def test_deliverable():
 
     ### Evaluate Primitive Cardiomyocyte Regulatory Observation Sequence ###
     # Import primitive cardiomyocyte data (prefix: prim_cm)
-    prim_cm_data = np.load('../data/ProjectDeliverable-PrimitiveCMs.npz')
+    prim_cm_data_file = data_dir / "ProjectDeliverable-PrimitiveCMs.npz"
+    prim_cm_data = np.load(prim_cm_data_file)
 
     # Instantiate submodule class models.ViterbiAlgorithm with the progenitor cardiomyocyte's HMM
     prim_cm_viterbi_instance = ViterbiAlgorithm(prog_cm_hmm_object)

@@ -36,9 +36,9 @@ class ViterbiAlgorithm:
         first_obs_index = self.hmm_object.observation_states_dict[decode_observation_states[0]]
         delta = np.multiply(self.hmm_object.prior_probabilities,
                             self.hmm_object.emission_probabilities[:, first_obs_index])
-        #if np.sum(delta) == 0:
-            #delta = np.full_like(delta, np.finfo(float).eps)
-        delta = delta / np.sum(delta)  # Scale
+        if np.sum(delta) == 0:
+            delta = np.full_like(delta, np.finfo(float).eps)
+        #delta = delta / np.sum(delta)  # Scale
 
         """Recursion Step"""
         # For each observation state to decode, select the hidden state sequence with the highest probability (i.e., Viterbi trellis)
@@ -50,13 +50,11 @@ class ViterbiAlgorithm:
                                                                    self.hmm_object.observation_states_dict[
                                                                        decode_observation_states[trellis_node]]])
 
-            # TODO: comment the initialization, recursion, and termination steps
-
             # Update delta and scale
             delta = np.max(product_of_delta_and_transition_emission, axis=1)
-            delta = delta / np.sum(delta)  # Scale
-            """if np.sum(delta) == 0:
-                delta = np.full_like(delta, np.finfo(float).eps)"""
+            #delta = delta / np.sum(delta)  # Scale
+            if np.sum(delta) == 0:
+                delta = np.full_like(delta, np.finfo(float).eps)
 
             # Select the hidden state sequence with the maximum probability
             best_path[trellis_node, :] = np.argmax(product_of_delta_and_transition_emission, axis=1)
@@ -71,7 +69,7 @@ class ViterbiAlgorithm:
 
         """Termination Step"""
         # Select the last hidden state, given the best path (i.e., maximum probability)
-        best_hidden_state_path = np.zeros(len(decode_observation_states), dtype='<U11')
+        best_hidden_state_path = np.zeros(len(decode_observation_states), dtype='U11')
         best_hidden_state_path[-1] = self.hmm_object.hidden_states[int(np.argmax(delta))]
 
         for trellis_node in range(len(decode_observation_states) - 2, -1, -1):
@@ -79,5 +77,4 @@ class ViterbiAlgorithm:
             best_hidden_state_index = int(
                 best_path[trellis_node, self.hmm_object.hidden_states.index(best_hidden_state_path[trellis_node + 1])])
             best_hidden_state_path[trellis_node] = self.hmm_object.hidden_states[best_hidden_state_index]
-
         return best_hidden_state_path

@@ -3,9 +3,10 @@ UCSF BMI203: Biocomputing Algorithms
 Author: Giovanni Aviles
 Date: 3/1/23
 Program: hw6-hmm-viterbi
-Description:
+Description: Testing Viterbi Algorithm Implementation using three different test cases
 """
 import pytest
+import pathlib
 import numpy as np
 from src.models.hmm import HiddenMarkovModel
 from src.models.decoders import ViterbiAlgorithm
@@ -20,15 +21,17 @@ def test_user_case_one():
     hidden_states = ['R01','R21']  # The NIH funding source of the graduate student's rotation project
 
     # PONDERING QUESTION: How would a user define/compute their own HMM instantiation inputs to decode the hidden states for their use case observations?
-    use_case_one_data = np.load('../data/UserCase-One.npz')
+    data_dir = pathlib.Path(__file__).resolve().parent.parent / 'data'
+    use_case_one_data_file = data_dir / "UserCase-One.npz"
+    use_case_one_data = np.load(use_case_one_data_file)
 
     # Instantiate submodule class models.HiddenMarkovModel with
     # observation and hidden states and prior, transition, and emission probabilities.
     use_case_one_hmm = HiddenMarkovModel(observation_states,
                                          hidden_states,
-                      use_case_one_data['prior_probabilities'],  # prior probabilities of hidden states in the order specified in the hidden_states list
-                      use_case_one_data['transition_probabilities'],  # transition_probabilities[:,hidden_states[i]]
-                      use_case_one_data['emission_probabilities'])  # emission_probabilities[hidden_states[i],:][:,observation_states[j]]
+                                         use_case_one_data['prior_probabilities'],  # prior probabilities of hidden states in the order specified in the hidden_states list
+                                         use_case_one_data['transition_probabilities'],  # transition_probabilities[:,hidden_states[i]]
+                                         use_case_one_data['emission_probabilities'])  # emission_probabilities[hidden_states[i],:][:,observation_states[j]]
     
     # Instantiate submodule class models.ViterbiAlgorithm using the use case one HMM 
     use_case_one_viterbi = ViterbiAlgorithm(use_case_one_hmm)
@@ -42,7 +45,7 @@ def test_user_case_one():
     assert np.allclose(use_case_one_viterbi.hmm_object.emission_probabilities, use_case_one_hmm.emission_probabilities)
 
     # TODO: Check HMM dimensions and ViterbiAlgorithm
-
+    #assert use_case_one_hmm.hidden_states.ndim == use_case_one_viterbi.best_hidden_state_sequence()
     
     # Find the best hidden state path for our observation states
     use_case_decoded_hidden_states = use_case_one_viterbi.best_hidden_state_sequence(use_case_one_data['observation_states'])
@@ -59,7 +62,9 @@ def test_user_case_two():
     hidden_states = ['R01', 'R21']  # The NIH funding source of the graduate student's rotation project
 
     # PONDERING QUESTION: How would a user define/compute their own HMM instantiation inputs to decode the hidden states for their use case observations?
-    use_case_one_data = np.load('../data/UserCase-One.npz')
+    data_dir = pathlib.Path(__file__).resolve().parent.parent / 'data'
+    use_case_one_data_file = data_dir / "UserCase-One.npz"
+    use_case_one_data = np.load(use_case_one_data_file)
 
     # Instantiate submodule class models.HiddenMarkovModel with
     # observation and hidden states and prior, transition, and emission probabilities.
@@ -82,7 +87,7 @@ def test_user_case_two():
         use_case_one_data['observation_states']) == 0.5
 
 def test_user_case_three():
-    """Toy example: Test if Viterbi Algorithm implementation returns a best hidden state sequence with an accuracy of at least 60%
+    """Toy example: Test if Viterbi Algorithm implementation returns the best hidden state sequence
     """
     np.savez('../data/Health.npz',
              prior_probabilities=np.array([0.6, 0.4]),
@@ -92,9 +97,11 @@ def test_user_case_three():
                                               [0.1, 0.3, 0.6]]),
              observation_states=np.array(
                  ['normal', 'cold', 'dizzy']),
-             hidden_states=np.array(['Healthy', 'Ill', 'Ill']))
+             hidden_states=np.array(['Healthy', 'Healthy', 'Ill']))
 
-    health_data = np.load('../data/Health.npz')
+    data_dir = pathlib.Path(__file__).resolve().parent.parent / 'data'
+    health_data_file = data_dir / "Health.npz"
+    health_data = np.load(health_data_file)
 
     # index annotation observation_states=[i,j]
     observation_states = ['normal', 'cold', 'dizzy']
@@ -113,13 +120,8 @@ def test_user_case_three():
     # Instantiate submodule class models.ViterbiAlgorithm using the use case one HMM
     health_viterbi = ViterbiAlgorithm(health_hmm)
 
-    # Decode the hidden states and evaluate the model performance
-    evaluate_viterbi_decoder_using_observation_states = health_viterbi.best_hidden_state_sequence(
-        health_data['observation_states'])
+    # Check that Viterbi algorithm implementation returns best hidden state sequence
+    health_decoded_hidden_states = health_viterbi.best_hidden_state_sequence(health_data['observation_states'])
+    assert np.alltrue(health_decoded_hidden_states == health_data['hidden_states'])
 
-    # Evaluate the accuracy of using the progenitor cardiomyocyte HMM and Viterbi algorithm to decode the progenitor CM's CRE selection strategies
-    # NOTE: Model is expected to perform with over 60% accuracy
-    assert np.sum(
-        health_data['hidden_states'] == evaluate_viterbi_decoder_using_observation_states) / len(
-        health_data['observation_states']) >= 0.6
 
